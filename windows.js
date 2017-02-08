@@ -7,56 +7,28 @@ const device = () =>
 	execa.shell('netsh interface show interface').then((stdout) => {
 		let data = new Array(stdout);
 		data = data[0].stdout.split(' ');
-		
+
+		if(data == undefined)
+			throw new Error('Couldn\'t find a Wi-Fi device');
+		// console.log(data);
+
 		return data[data.length - 1].trim();
 	});
 
-
-const toggleDevice = (turnOn = null) => {
-	execa.shell('netsh interface show interface').then((stdout) => {
-		let data = new Array(stdout);
-		data = data[0].stdout.split(' ');
-		
-		let deviceInterface = data[data.length - 1].trim().toLowerCase();
-
-		if(turnOn != null) 
-			return execa.shell(`netsh interface set interface "${deviceInterface}" ${(turnOn) ? 'enabled' : 'disabled'}`)
-					.catch(err => {throw new Error('Error: Run this with administrator privilegies!')});
-		
-		return isOn().then(isOn => {
-			execa.shell(`netsh interface set interface "${deviceInterface}" ${(isOn) ? 'disabled' : 'enabled'}`)
-			.catch(err => {throw new Error('Error: Run this with administrator privilegies!')});
-		});
-	});
-};
+const toggleDevice = (turnOn) => 
+	device().then(deviceInterface => execa.shell(`netsh interface set interface "${deviceInterface}" ${(turnOn) ? 'enabled' : 'disabled'}`).catch(err => {throw new Error('You don\'t have any WI-FI device or your run this without administrator privilegies!')}));
 
 const toggle = (turnOn) => {
 	if (typeof turnOn === 'boolean') {
-		return new Promise((resolve) => resolve(toggleDevice(turnOn)));
+		return toggleDevice(turnOn);
 	}
 
-	return new Promise((resolve) => resolve(toggleDevice()));
+	return isOn().then(isOn => toggleDevice(!isOn));
 };
-
-const restart = () => 
-	execa.shell('netsh interface show interface').then((stdout) => {
-		let data = new Array(stdout);
-		data = data[0].stdout.split(' ');
-		
-		let deviceInterface = data[data.length - 1].trim().toLowerCase();
-
-		execa.shell(`netsh interface set interface "${deviceInterface}" disabled`).then(() => {
-			execa.shell(`netsh interface set interface "${deviceInterface}" enabled`).catch(err => {throw new Error('Error: Run this with administrator privilegies!')});
-		}).catch(err => {throw new Error('Error: Run this with administrator privilegies!')});
-
-		return true;
-	});
-
-
 
 module.exports.on = () => toggle(true);
 module.exports.off = () => toggle(false);
-module.exports.toggle = () => toggle();
+module.exports.toggle = toggle;
 module.exports.isOn = () => isOn();
-module.exports.restart = () => restart();
-module.exports.device = device();
+module.exports.restart = () => toggle(false).then(() => toggle(true));
+module.exports.device = device;
