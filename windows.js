@@ -10,7 +10,6 @@ const device = () =>
 
 		if(data == undefined)
 			throw new Error('Couldn\'t find a Wi-Fi device');
-		// console.log(data);
 
 		return data[data.length - 1].trim();
 	});
