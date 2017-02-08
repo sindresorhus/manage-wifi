@@ -3,15 +3,15 @@ let platform = null;
 
 switch(process.platform) {
 	case 'darwin':
-		platform = require('./macos.js');
+		platform = require('./macos');
 		break;
 
 	case 'win32':
-		platform = require('./windows.js');
+		platform = require('./windows');
 		break;
 
 	default: 
-		return Promise.reject(new Error('You OS don\'t support this library!'));
+		return Promise.reject(new Error('Only macOS and Windows are supported'));
 };
 
 module.exports = platform;
