@@ -18,8 +18,9 @@ const device = pMemoize(() => {
 	});
 });
 
-const isOn = device =>
-	execa.stdout('networksetup', ['-getairportpower', device]).then(stdout => /: On$/.test(stdout));
+const isOn = device => execa
+	.stdout('networksetup', ['-getairportpower', device])
+	.then(stdout => stdout.endsWith(': On'));
 
 const toggleDevice = (device, turnOn) =>
 	execa('networksetup', ['-setairportpower', device, (turnOn ? 'on' : 'off')]).then(() => {});
