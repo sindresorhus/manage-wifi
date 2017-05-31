@@ -38,6 +38,7 @@
     "off"
   ],
   "dependencies": {
+    "delay": "^2.0.0",
     "execa": "^0.6.0",
     "p-memoize": "^1.0.0"
   },

@@ -1,6 +1,7 @@
 'use strict';
 const execa = require('execa');
 const pMemoize = require('p-memoize');
+const delay = require('delay');
 
 const device = pMemoize(() => {
 	if (process.platform !== 'darwin') {
@@ -19,20 +20,30 @@ const device = pMemoize(() => {
 });
 
 const isOn = device => execa
-	.stdout('networksetup', ['-getairportpower', device])
-	.then(stdout => stdout.endsWith(': On'));
+	.stdout('ifconfig', [device])
+	.then(stdout => stdout.includes('status: active'));
 
-const toggleDevice = (device, turnOn) =>
-	execa('networksetup', ['-setairportpower', device, (turnOn ? 'on' : 'off')]).then(() => {});
+const toggleDevice = (device, turnOn) => {
+	return execa('networksetup', ['-setairportpower', device, (turnOn ? 'on' : 'off')])
+		.then(delay(100))
+		.then(() => isOn(device))
+		.then(on => {
+			const shouldRetry = turnOn ? !on : on;
+			if (shouldRetry) {
+				return toggleDevice(device, turnOn);
+			}
+		});
+};
 
-const toggle = turnOn =>
-	device().then(device => {
+const toggle = turnOn => {
+	return device().then(device => {
 		if (typeof turnOn === 'boolean') {
 			return toggleDevice(device, turnOn);
 		}
 
 		return isOn(device).then(isOn => toggleDevice(device, !isOn));
 	});
+};
 
 module.exports.on = () => toggle(true);
 module.exports.off = () => toggle(false);
