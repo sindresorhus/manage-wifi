@@ -1,49 +1,49 @@
 {
-  "name": "manage-wifi",
-  "version": "1.0.1",
-  "description": "Turn your Wi-Fi on and off",
-  "license": "MIT",
-  "repository": "sindresorhus/manage-wifi",
-  "author": {
-    "name": "Sindre Sorhus",
-    "email": "sindresorhus@gmail.com",
-    "url": "sindresorhus.com"
-  },
-  "engines": {
-    "node": ">=4"
-  },
-  "scripts": {
-    "test": "xo && ava"
-  },
-  "files": [
-    "index.js"
-  ],
-  "keywords": [
-    "wifi",
-    "wi-fi",
-    "internet",
-    "wireless",
-    "manage",
-    "control",
-    "network",
-    "device",
-    "adapter",
-    "en0",
-    "en1",
-    "restart",
-    "toggle",
-    "enable",
-    "disable",
-    "on",
-    "off"
-  ],
-  "dependencies": {
-    "delay": "^2.0.0",
-    "execa": "^0.6.0",
-    "p-memoize": "^1.0.0"
-  },
-  "devDependencies": {
-    "ava": "*",
-    "xo": "*"
-  }
+	"name": "manage-wifi",
+	"version": "1.0.1",
+	"description": "Turn your Wi-Fi on and off",
+	"license": "MIT",
+	"repository": "sindresorhus/manage-wifi",
+	"author": {
+		"name": "Sindre Sorhus",
+		"email": "sindresorhus@gmail.com",
+		"url": "sindresorhus.com"
+	},
+	"engines": {
+		"node": ">=8"
+	},
+	"scripts": {
+		"test": "xo && ava"
+	},
+	"files": [
+		"index.js"
+	],
+	"keywords": [
+		"wifi",
+		"wi-fi",
+		"internet",
+		"wireless",
+		"manage",
+		"control",
+		"network",
+		"device",
+		"adapter",
+		"en0",
+		"en1",
+		"restart",
+		"toggle",
+		"enable",
+		"disable",
+		"on",
+		"off"
+	],
+	"dependencies": {
+		"delay": "^4.1.0",
+		"execa": "^1.0.0",
+		"p-memoize": "^2.1.0"
+	},
+	"devDependencies": {
+		"ava": "^0.25.0",
+		"xo": "^0.23.0"
+	}
 }

@@ -8,7 +8,7 @@
 ## Install
 
 ```
-$ npm install --save manage-wifi
+$ npm install manage-wifi
 ```
 
 
@@ -47,7 +47,7 @@ Turn Wi-Fi off.
 
 #### toggle([force])
 
-Inverse the Wi-Fi state.
+Invert the Wi-Fi state.
 
 Optionally pass a `boolean` to force a state.
 

@@ -1,5 +1,5 @@
 import test from 'ava';
-import m from '.';
+import manageWifi from '.';
 
 if (process.env.CI) { // Travis doesn't have Wi-Fi
 	test('travis', t => {
@@ -7,22 +7,22 @@ if (process.env.CI) { // Travis doesn't have Wi-Fi
 	});
 } else {
 	test.after(async () => {
-		await m.on();
+		await manageWifi.on();
 	});
 
 	test('main', async t => {
-		t.regex(await m.device(), /en\d/);
-		await m.off();
-		t.false(await m.isOn());
-		await m.on();
-		t.true(await m.isOn());
-		await m.toggle();
-		t.false(await m.isOn());
-		await m.toggle(false);
-		t.false(await m.isOn());
-		await m.on();
-		t.true(await m.isOn());
-		await m.restart();
-		t.true(await m.isOn());
+		t.regex(await manageWifi.device(), /en\d/);
+		await manageWifi.off();
+		t.false(await manageWifi.isOn());
+		await manageWifi.on();
+		t.true(await manageWifi.isOn());
+		await manageWifi.toggle();
+		t.false(await manageWifi.isOn());
+		await manageWifi.toggle(false);
+		t.false(await manageWifi.isOn());
+		await manageWifi.on();
+		t.true(await manageWifi.isOn());
+		await manageWifi.restart();
+		t.true(await manageWifi.isOn());
 	});
 }

@@ -3,51 +3,61 @@ const execa = require('execa');
 const pMemoize = require('p-memoize');
 const delay = require('delay');
 
-const device = pMemoize(() => {
+const getDevice = pMemoize(async () => {
 	if (process.platform !== 'darwin') {
-		return Promise.reject(new Error('macOS only'));
+		throw new Error('macOS only');
 	}
 
-	return execa.stdout('networksetup', ['-listallhardwareports']).then(stdout => {
-		const result = stdout.match(/Hardware Port: Wi-Fi\nDevice: (en\d)/);
+	const {stdout} = await execa('networksetup', ['-listallhardwareports']);
 
-		if (!result) {
-			throw new Error('Couldn\'t find a Wi-Fi device');
-		}
+	const result = stdout.match(/Hardware Port: Wi-Fi\nDevice: (en\d)/);
+	if (!result) {
+		throw new Error('Couldn\'t find a Wi-Fi device');
+	}
 
-		return result[1];
-	});
+	return result[1];
 });
 
-const isOn = device => execa
-	.stdout('ifconfig', [device])
-	.then(stdout => stdout.includes('status: active'));
-
-const toggleDevice = (device, turnOn) => {
-	return execa('networksetup', ['-setairportpower', device, (turnOn ? 'on' : 'off')])
-		.then(delay(100))
-		.then(() => isOn(device))
-		.then(on => {
-			const shouldRetry = turnOn ? !on : on;
-			if (shouldRetry) {
-				return toggleDevice(device, turnOn);
-			}
-		});
+const isOn = async device => {
+	const {stdout} = await execa('ifconfig', [device]);
+	return stdout.includes('status: active');
 };
 
-const toggle = turnOn => {
-	return device().then(device => {
-		if (typeof turnOn === 'boolean') {
-			return toggleDevice(device, turnOn);
-		}
+const toggleDevice = async (device, turnOn) => {
+	await execa('networksetup', ['-setairportpower', device, (turnOn ? 'on' : 'off')]);
 
-		return isOn(device).then(isOn => toggleDevice(device, !isOn));
-	});
+	await delay(100);
+	const on = await isOn(device);
+
+	const shouldRetry = turnOn ? !on : on;
+	if (shouldRetry) {
+		await toggleDevice(device, turnOn);
+	}
 };
 
-module.exports.on = () => toggle(true);
-module.exports.off = () => toggle(false);
-module.exports.toggle = toggle;
-module.exports.isOn = () => device().then(isOn);
-module.exports.restart = () => toggle(false).then(() => toggle(true));
-module.exports.device = device;
+const toggle = async turnOn => {
+	const device = await getDevice();
+
+	if (typeof turnOn !== 'boolean') {
+		turnOn = !(await isOn(device));
+	}
+
+	await toggleDevice(device, turnOn);
+};
+
+const manageWifi = module.exports;
+
+manageWifi.on = () => toggle(true);
+
+manageWifi.off = () => toggle(false);
+
+manageWifi.toggle = toggle;
+
+manageWifi.isOn = async () => isOn(await getDevice());
+
+manageWifi.restart = async () => {
+	await toggle(false);
+	await toggle(true);
+};
+
+manageWifi.device = getDevice;
