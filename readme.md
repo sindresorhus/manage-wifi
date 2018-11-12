@@ -17,15 +17,17 @@ $ npm install --save manage-wifi
 ```js
 const manageWifi = require('manage-wifi');
 
-await manageWifi.off();
-console.log('Wi-Fi is off');
+(async () => {
+	await manageWifi.off();
+	console.log('Wi-Fi is off');
 
-await manageWifi.on();
-console.log('Wi-Fi is on');
+	await manageWifi.on();
+	console.log('Wi-Fi is on');
 
-const name = await manageWifi.device();
-console.log(name);
-//=> 'en0';
+	const name = await manageWifi.device();
+	console.log(name);
+	//=> 'en0';
+})();
 ```
 
 
