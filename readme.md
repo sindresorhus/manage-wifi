@@ -1,4 +1,4 @@
-# manage-wifi [![Build Status](https://travis-ci.org/sindresorhus/manage-wifi.svg?branch=master)](https://travis-ci.org/sindresorhus/manage-wifi)
+# manage-wifi
 
 > Turn your Wi-Fi on and off
 
