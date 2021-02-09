@@ -47,7 +47,7 @@ Turn Wi-Fi off.
 
 #### toggle([force])
 
-Invert the Wi-Fi state.
+Invert the Wi-Fi state. void
 
 Optionally pass a `boolean` to force a state.
 

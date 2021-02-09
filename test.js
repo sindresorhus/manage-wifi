@@ -1,7 +1,7 @@
 import test from 'ava';
 import manageWifi from '.';
 
-if (process.env.CI) { // CI doesn't have Wi-Fi
+if (process.env.CI || process.platform !== 'darwin') { // CI doesn't have Wi-Fi
 	test('ci', t => {
 		t.pass();
 	});
