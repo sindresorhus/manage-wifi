@@ -6,12 +6,12 @@ export declare function on(): Promise<void>;
 /**
 Turn Wi-Fi off.
 */
-export function off(): Promise<void>;
+export declare function off(): Promise<void>;
     
 /**
 Invert the Wi-Fi state.
 
-@param force The state to force.
+@param force - The state to force.
 */
 export declare function toggle(force?: boolean): Promise<void>;
 
