@@ -6,7 +6,7 @@ export declare function on(): Promise<void>;
 /**
 Turn Wi-Fi off.
 */
-export declare function off(): Promise<void>;
+export function off(): Promise<void>;
     
 /**
 Invert the Wi-Fi state.
@@ -23,7 +23,7 @@ export declare function restart(): Promise<void>;
 /** 
 Check whether the Wi-Fi is on.
 */
-export declare function isOn(): Promise<boolean>; 
+export declare function isOn(): Promise<boolean>;
 
 /**
 Get the Wi-Fi device name.
