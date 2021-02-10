@@ -4,36 +4,31 @@
 
 *macOS only, but pull request welcome for Linux and Windows support.*
 
-
 ## Install
 
 ```
 $ npm install manage-wifi
 ```
 
-
 ## Usage
 
 ```js
-const manageWifi = require('manage-wifi');
+import wifi from 'manage-wifi';
 
-(async () => {
-	await manageWifi.off();
-	console.log('Wi-Fi is off');
+await wifi.off();
+console.log('Wi-Fi is off');
 
-	await manageWifi.on();
-	console.log('Wi-Fi is on');
+await wifi.on();
+console.log('Wi-Fi is on');
 
-	const name = await manageWifi.device();
-	console.log(name);
-	//=> 'en0';
-})();
+const name = await wifi.device();
+console.log(name);
+//=> 'en0';
 ```
-
 
 ## API
 
-### manageWifi
+### wifi
 
 All the methods return a `Promise`.
 
@@ -45,7 +40,7 @@ Turn Wi-Fi on.
 
 Turn Wi-Fi off.
 
-#### toggle([force])
+#### toggle(force?)
 
 Invert the Wi-Fi state.
 
@@ -63,12 +58,6 @@ Returns a `Promise<boolean>` of whether the Wi-Fi is on.
 
 Returns a `Promise<string>` with the Wi-Fi device name.
 
-
 ## Related
 
 - [manage-wifi-cli](https://github.com/sindresorhus/manage-wifi-cli) - CLI for this module
-
-
-## License
-
-MIT © [Sindre Sorhus](https://sindresorhus.com)

@@ -1,7 +1,6 @@
-'use strict';
-const execa = require('execa');
-const pMemoize = require('p-memoize');
-const delay = require('delay');
+import execa from 'execa';
+import pMemoize from 'p-memoize';
+import delay from 'delay';
 
 const getDevice = pMemoize(async () => {
 	if (process.platform !== 'darwin') {
@@ -10,12 +9,12 @@ const getDevice = pMemoize(async () => {
 
 	const {stdout} = await execa('networksetup', ['-listallhardwareports']);
 
-	const result = stdout.match(/Hardware Port: Wi-Fi\nDevice: (en\d)/);
+	const result = /Hardware Port: Wi-Fi\nDevice: (?<device>en\d)/.exec(stdout);
 	if (!result) {
 		throw new Error('Couldn\'t find a Wi-Fi device');
 	}
 
-	return result[1];
+	return result.groups.device;
 });
 
 const isOn = async device => {
@@ -45,19 +44,21 @@ const toggle = async turnOn => {
 	await toggleDevice(device, turnOn);
 };
 
-const manageWifi = module.exports;
+const wifi = {};
 
-manageWifi.on = () => toggle(true);
+wifi.on = () => toggle(true);
 
-manageWifi.off = () => toggle(false);
+wifi.off = () => toggle(false);
 
-manageWifi.toggle = toggle;
+wifi.toggle = toggle;
 
-manageWifi.isOn = async () => isOn(await getDevice());
+wifi.isOn = async () => isOn(await getDevice());
 
-manageWifi.restart = async () => {
+wifi.restart = async () => {
 	await toggle(false);
 	await toggle(true);
 };
 
-manageWifi.device = getDevice;
+wifi.device = getDevice;
+
+export default wifi;

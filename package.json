@@ -4,13 +4,16 @@
 	"description": "Turn your Wi-Fi on and off",
 	"license": "MIT",
 	"repository": "sindresorhus/manage-wifi",
+	"funding": "https://github.com/sponsors/sindresorhus",
 	"author": {
 		"name": "Sindre Sorhus",
 		"email": "sindresorhus@gmail.com",
-		"url": "sindresorhus.com"
+		"url": "https://sindresorhus.com"
 	},
+	"type": "module",
+	"exports": "./index.js",
 	"engines": {
-		"node": ">=8"
+		"node": ">=12"
 	},
 	"scripts": {
 		"test": "xo && ava && tsd"
@@ -39,13 +42,13 @@
 		"off"
 	],
 	"dependencies": {
-		"delay": "^4.1.0",
-		"execa": "^1.0.0",
-		"p-memoize": "^2.1.0"
+		"delay": "^5.0.0",
+		"execa": "^5.0.0",
+		"p-memoize": "^4.0.1"
 	},
 	"devDependencies": {
-		"ava": "^0.25.0",
+		"ava": "^3.15.0",
 		"tsd": "^0.14.0",
-		"xo": "^0.23.0"
+		"xo": "^0.37.1"
 	}
 }

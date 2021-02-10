@@ -1,11 +1,12 @@
 import test from 'ava';
-import manageWifi from '.';
+import manageWifi from './index.js';
 
 if (process.env.CI || process.platform !== 'darwin') { // CI doesn't have Wi-Fi
 	test('ci', t => {
 		t.pass();
 	});
 } else {
+	// eslint-disable-next-line ava/hooks-order
 	test.after(async () => {
 		await manageWifi.on();
 	});
