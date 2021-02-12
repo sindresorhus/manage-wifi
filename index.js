@@ -2,21 +2,27 @@ import execa from 'execa';
 import pMemoize from 'p-memoize';
 import delay from 'delay';
 
+const powershell = (async command => {
+	if (typeof (command) !== 'string') {
+		throw new TypeError('Invalid command');
+	}
+
+	return execa.command(command, {shell: 'powershell'});
+});
+
 const getDevice = pMemoize(async () => {
-	if (process.platform == 'darwin') {
-		const { stdout } = await execa('networksetup', ['-listallhardwareports']);
+	if (process.platform === 'darwin') {
+		const {stdout} = await execa('networksetup', ['-listallhardwareports']);
 		const result = /Hardware Port: Wi-Fi\nDevice: (?<device>en\d)/.exec(stdout);
 		if (!result) {
 			throw new Error('Couldn\'t find a Wi-Fi device');
 		}
 
 		return result.groups.device;
-	} else if (process.platform == 'win32') {
-		const { stdout } = await execa('powershell', [
-			'-command',
-			'Get-NetAdapter -Name Wi-Fi | Format-List -Property PnPDeviceID',
-		]);
+	}
 
+	if (process.platform === 'win32') {
+		const {stdout} = await powershell('Get-NetAdapter -Name Wi-Fi | Format-List -Property PnPDeviceID');
 		const result = /(?<=PnPDeviceID : ).*/.exec(stdout);
 
 		if (!result) {
@@ -24,46 +30,39 @@ const getDevice = pMemoize(async () => {
 		}
 
 		return result[0];
-	} else {
-		throw new Error('macOS or Windows only');
 	}
+
+	throw new Error('macOS or Windows only');
 });
 
-const isOn = async (device) => {
-	if (process.platform == 'darwin') {
-		const { stdout } = await execa('ifconfig', [device]);
+const isOn = async device => {
+	if (process.platform === 'darwin') {
+		const {stdout} = await execa('ifconfig', [device]);
 		return stdout.includes('status: active');
-	} else if (process.platform == 'win32') {
-		const { stdout } = await execa('powershell', [
-			'-command',
-			'Get-NetAdapterAdvancedProperty -Name Wi-Fi -RegistryKeyword RFOff -AllProperties | Format-List -Property RegistryValue',
-		]);
-		const status = /(?<=\{).+?(?=\})/.exec(stdout);
-		return !parseInt(status);
+	}
+
+	if (process.platform === 'win32') {
+		const {stdout} = await powershell('Get-NetAdapterAdvancedProperty -Name Wi-Fi -RegistryKeyword RFOff -AllProperties | Format-List -Property RegistryValue');
+		const status = /(?<={).+?(?=})/.exec(stdout);
+		return !Number.parseInt(status, 10);
 	}
 };
 
 const toggleDevice = async (device, turnOn) => {
-	if (process.platform == 'darwin') {
+	if (process.platform === 'darwin') {
 		await execa('networksetup', [
 			'-setairportpower',
 			device,
-			turnOn ? 'on' : 'off',
+			turnOn ? 'on' : 'off'
 		]);
-		await delay(100);
-	} else if (process.platform == 'win32') {
-		var setStatus = turnOn ? 0 : 1;
-		//console.log("Testing..."); // Odd Issue: Without this log statement, tests fail on Windows 10
-
-		await execa(
-			'powershell -command Start-Process PowerShell -Verb RunAs -WindowStyle Hidden',
-			[
-				`-ArgumentList "Set-NetAdapterAdvancedProperty -Name Wi-Fi -RegistryKeyword RFOff -AllProperties -RegistryValue ${setStatus}"`,
-			]
-		);
-		await delay(6000);
+	} else if (process.platform === 'win32') {
+		const setStatus = turnOn ? 0 : 1;
+		console.log('Testing...'); // Odd Issue: Without this log statement, tests fail on Windows 10
+		await powershell(`Start-Process PowerShell -Verb RunAs -WindowStyle Hidden -ArgumentList "Set-NetAdapterAdvancedProperty -Name Wi-Fi -RegistryKeyword RFOff -AllProperties -RegistryValue ${setStatus}"`);
 	}
-	
+
+	await delay(100);
+
 	const on = await isOn(device);
 
 	const shouldRetry = turnOn ? !on : on;

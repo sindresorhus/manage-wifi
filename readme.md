@@ -2,7 +2,7 @@
 
 > Turn your Wi-Fi on and off
 
-*macOS only, but pull request welcome for Linux and Windows support.*
+*macOS and Windows only, but pull request welcome for Linux support.*
 
 ## Install
 
@@ -23,8 +23,12 @@ console.log('Wi-Fi is on');
 
 const name = await wifi.device();
 console.log(name);
-//=> 'en0';
+// MacOS => 'en0';
+// Windows => 'USB\VID_0BD...'
 ```
+
+**NOTE**: In Windows, User Account Control (UAC) Pop-Up may displayed on wifi status change. It is by default behavior and related to the user account control settings.
+
 
 ## API
 
