@@ -2,12 +2,12 @@ import execa from 'execa';
 import pMemoize from 'p-memoize';
 import delay from 'delay';
 
-const powershell = (async command => {
+const powershell = (async (command, args) => {
 	if (typeof (command) !== 'string') {
 		throw new TypeError('Invalid command');
 	}
 
-	return execa.command(command, {shell: 'powershell'});
+	return execa(command, args, {shell: 'powershell'});
 });
 
 const getDevice = pMemoize(async () => {
@@ -22,7 +22,8 @@ const getDevice = pMemoize(async () => {
 	}
 
 	if (process.platform === 'win32') {
-		const {stdout} = await powershell('Get-NetAdapter -Name Wi-Fi | Format-List -Property PnPDeviceID');
+		const {stdout} = await powershell('Get-NetAdapter', ['-Name Wi-Fi | Format-List -Property PnPDeviceID']);
+		// Stdout => PnPDeviceID : USB\VID_0BRA&PID_8387\00C0CA7B646E
 		const result = /(?<=PnPDeviceID : ).*/.exec(stdout);
 
 		if (!result) {
@@ -42,7 +43,8 @@ const isOn = async device => {
 	}
 
 	if (process.platform === 'win32') {
-		const {stdout} = await powershell('Get-NetAdapterAdvancedProperty -Name Wi-Fi -RegistryKeyword RFOff -AllProperties | Format-List -Property RegistryValue');
+		const {stdout} = await powershell('Get-NetAdapterAdvancedProperty', ['-Name Wi-Fi -RegistryKeyword RFOff -AllProperties | Format-List -Property RegistryValue']);
+		// Stdout => RegistryValue : {0}
 		const status = /(?<={).+?(?=})/.exec(stdout);
 		return !Number.parseInt(status, 10);
 	}
@@ -58,7 +60,7 @@ const toggleDevice = async (device, turnOn) => {
 	} else if (process.platform === 'win32') {
 		const setStatus = turnOn ? 0 : 1;
 		console.log('Testing...'); // Odd Issue: Without this log statement, tests fail on Windows 10
-		await powershell(`Start-Process PowerShell -Verb RunAs -WindowStyle Hidden -ArgumentList "Set-NetAdapterAdvancedProperty -Name Wi-Fi -RegistryKeyword RFOff -AllProperties -RegistryValue ${setStatus}"`);
+		await powershell('Start-Process PowerShell -Verb RunAs -WindowStyle Hidden', [`-ArgumentList "Set-NetAdapterAdvancedProperty -Name Wi-Fi -RegistryKeyword RFOff -AllProperties -RegistryValue ${setStatus}"`]);
 	}
 
 	await delay(100);

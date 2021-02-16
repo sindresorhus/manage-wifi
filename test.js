@@ -12,12 +12,7 @@ if (process.env.CI || (process.platform !== 'darwin' && process.platform !== 'wi
 	});
 
 	test('main', async t => {
-		if (process.platform === 'darwin') {
-			t.regex(await manageWifi.device(), /en\d/);
-		} else if (process.platform === 'win32') {
-			t.regex(await manageWifi.device(), /PCI|USB/);
-		}
-
+		t.regex(await manageWifi.device(), process.platform === 'win32' ? /PCI|USB/ : /en\d/);
 		await manageWifi.off();
 		t.false(await manageWifi.isOn());
 		await manageWifi.on();

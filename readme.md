@@ -23,7 +23,7 @@ console.log('Wi-Fi is on');
 
 const name = await wifi.device();
 console.log(name);
-// MacOS => 'en0';
+// macOS => 'en0';
 // Windows => 'USB\VID_0BD...'
 ```
 
