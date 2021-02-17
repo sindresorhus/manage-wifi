@@ -59,8 +59,7 @@ const toggleDevice = async (device, turnOn) => {
 		]);
 	} else if (process.platform === 'win32') {
 		const setStatus = turnOn ? 0 : 1;
-		console.log('Testing...'); // Odd Issue: Without this log statement, tests fail on Windows 10
-		await powershell('Start-Process PowerShell -Verb RunAs -WindowStyle Hidden', [`-ArgumentList "Set-NetAdapterAdvancedProperty -Name Wi-Fi -RegistryKeyword RFOff -AllProperties -RegistryValue ${setStatus}"`]);
+		await powershell('Start-Process', ['PowerShell -Verb RunAs -WindowStyle Hidden', `-ArgumentList "Set-NetAdapterAdvancedProperty -Name Wi-Fi -RegistryKeyword RFOff -AllProperties -RegistryValue ${setStatus}"`]);
 	}
 
 	await delay(100);
