@@ -23,7 +23,7 @@ const getDevice = pMemoize(async () => {
 
 	if (process.platform === 'win32') {
 		const {stdout} = await powershell('Get-NetAdapter', ['-Name Wi-Fi | Format-List -Property PnPDeviceID']);
-		// Stdout => PnPDeviceID : USB\VID_0BRA&PID_8387\00C0CA7B646E
+		// stdout: `PnPDeviceID : USB\VID_0BRA&PID_8387\00C0CA7B646E`
 		const result = /(?<=PnPDeviceID : ).*/.exec(stdout);
 
 		if (!result) {
@@ -44,7 +44,7 @@ const isOn = async device => {
 
 	if (process.platform === 'win32') {
 		const {stdout} = await powershell('Get-NetAdapterAdvancedProperty', ['-Name Wi-Fi -RegistryKeyword RFOff -AllProperties | Format-List -Property RegistryValue']);
-		// Stdout => RegistryValue : {0}
+		// stdout: `RegistryValue : {0}`
 		const status = /(?<={).+?(?=})/.exec(stdout);
 		return !Number.parseInt(status, 10);
 	}
