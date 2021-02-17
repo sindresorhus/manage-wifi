@@ -27,8 +27,7 @@ console.log(name);
 // Windows => 'USB\VID_0BD...'
 ```
 
-**NOTE**: In Windows, User Account Control (UAC) Pop-Up may displayed on wifi status change. It is by default behavior and related to the user account control settings.
-
+**Note**: On Windows, a User Account Control (UAC) dialog may be displayed on Wi-Fi status change.
 
 ## API
 
