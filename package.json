@@ -16,7 +16,7 @@
 		"node": ">=12"
 	},
 	"scripts": {
-		"test": "xo && ava -T 30s && tsd"
+		"test": "xo && ava && tsd"
 	},
 	"files": [
 		"index.js",
@@ -41,6 +41,9 @@
 		"on",
 		"off"
 	],
+	"ava": {
+		"timeout": "30s"
+	},
 	"dependencies": {
 		"delay": "^5.0.0",
 		"execa": "^5.0.0",
