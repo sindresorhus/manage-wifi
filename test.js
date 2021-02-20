@@ -1,7 +1,7 @@
 import test from 'ava';
 import manageWifi from './index.js';
 
-if (process.env.CI || process.platform !== 'darwin') { // CI doesn't have Wi-Fi
+if (process.env.CI || (process.platform !== 'darwin' && process.platform !== 'win32')) { // CI doesn't have Wi-Fi
 	test('ci', t => {
 		t.pass();
 	});
@@ -12,7 +12,7 @@ if (process.env.CI || process.platform !== 'darwin') { // CI doesn't have Wi-Fi
 	});
 
 	test('main', async t => {
-		t.regex(await manageWifi.device(), /en\d/);
+		t.regex(await manageWifi.device(), process.platform === 'win32' ? /PCI|USB/ : /en\d/);
 		await manageWifi.off();
 		t.false(await manageWifi.isOn());
 		await manageWifi.on();
